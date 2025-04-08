@@ -17,12 +17,8 @@ namespace YAPCA
             InitializeComponent();
             LocalizationManager.SetLanguage(ConfigManager.Config.Lang);
             LocalizationManager.LocalizeUiElements(this);
-
-            // Синхронизируем язык в комбинированном списке
             LanguageCombo.SelectedItem = ConfigManager.Config.Lang;
-
-            _isInitializing = false; // После инициализации можно обработать изменения
-
+            _isInitializing = false;
             UpdateInfo(this, EventArgs.Empty);
             DateChecker.Check(this, EventArgs.Empty);
             _NotificationService = new TrayNotificationService(trayIcon);
