@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using YAPCA.res;
 
 namespace YAPCA
 {
@@ -15,6 +16,7 @@ namespace YAPCA
         public LoginWindow()
         {
             InitializeComponent();
+            LocalizationManager.LocalizeUiElements(this);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -28,7 +30,7 @@ namespace YAPCA
             }
             else
             {
-                MessageBox.Show("Incorrect password. Try Again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Resources.LoginWindow_button1_Click_Incorrect_password, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 textBox1.Clear();
             }
         }
@@ -38,6 +40,18 @@ namespace YAPCA
             if (e.KeyChar == (char)Keys.Enter)
             {
                 button1_Click(sender, e);
+            }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            if (textBox1.UseSystemPasswordChar)
+            {
+                textBox1.UseSystemPasswordChar = false;
+            }
+            else
+            {
+                textBox1.UseSystemPasswordChar = true;
             }
         }
     }

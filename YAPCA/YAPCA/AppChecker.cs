@@ -1,21 +1,23 @@
 ﻿using System.Diagnostics;
 using System.Security;
 using System.Windows.Forms;
+using YAPCA.res;
 
 namespace YAPCA;
 
 public class AppChecker
 {
     private static bool _gameAppsBlockedNotified = false;
-    private static bool _gamesUnlockedNotified = false;
+    private static bool _gamesUnlockedNotified = ConfigManager.Config.AreGamesUnlocked ? true : false;
+
 
     public static void Check(string appName, TrayNotificationService notificationService)
     {
-        if (ConfigManager.Config.EducationalTime >= ConfigManager.Config.EducationalLimit && !_gamesUnlockedNotified)
+        if (ConfigManager.Config.EducationalTime >= ConfigManager.Config.EducationalLimit && !_gamesUnlockedNotified && ConfigManager.Config.GameTime < ConfigManager.Config.GameLimit)
         {
             notificationService.ShowNotification(
-                "Game Apps Unlocked",
-                "You have completed your educational time limit. Game apps are now unlocked.",
+                Resources.GameAppsUnlocked_Title,
+                Resources.GameAppsUnlocked_Text,
                 ToolTipIcon.Info
             );
             _gamesUnlockedNotified = true;
@@ -39,8 +41,8 @@ public class AppChecker
                 else if (!ConfigManager.Config.AreGamesUnlocked)
                 {
                     notificationService.ShowNotification(
-                        "Game Apps Blocked",
-                        "Game apps are blocked until you finish your educational time (" + ((ConfigManager.Config.EducationalLimit - ConfigManager.Config.EducationalTime) / 60) + ") min",
+                        Resources.GameAppsBlocked_Title,
+                        string.Format(Resources.GameAppsBlocked_Text, ((ConfigManager.Config.EducationalLimit - ConfigManager.Config.EducationalTime) / 60)),
                         ToolTipIcon.Warning
                     );
                     _gameAppsBlockedNotified = true;
@@ -48,10 +50,10 @@ public class AppChecker
                 }
             }
 
-            else if((ConfigManager.Config.GameTime > ConfigManager.Config.GameLimit) && ConfigManager.Config.IsKilling)
+            if((ConfigManager.Config.GameTime >= ConfigManager.Config.GameLimit) && ConfigManager.Config.IsKilling)
             {
-                notificationService.ShowNotification("Game time limit exceeded",
-                    $"You`ve exceeded your time limit for games ({ConfigManager.Config.GameLimit / 60} minutes)",
+                notificationService.ShowNotification(Resources.GameTimeLimit_Title,
+                    string.Format(Resources.GameTimeLimit_Text, ConfigManager.Config.GameLimit / 60),
                     ToolTipIcon.Warning);
                 _gameAppsBlockedNotified = false;
                 AppKiller.CloseApp(appName);
@@ -69,6 +71,11 @@ public class AppChecker
             {
                 Logger.LogEducation(appName);
             }
+        }
+
+        if (ConfigManager.Config.GameTime >= ConfigManager.Config.GameLimit)
+        {
+            ConfigManager.Config.AreGamesUnlocked = false;
         }
     }
 }

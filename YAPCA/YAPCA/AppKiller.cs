@@ -14,9 +14,17 @@ public class AppKiller
             {
                 try
                 {
-                    process.Kill();
-                    //alt?
-                    //process.CloseMainWindow();
+                    if (!process.HasExited)
+                    {
+                        process.CloseMainWindow();  
+                        process.WaitForExit(5000); 
+                    }
+
+                   
+                    if (!process.HasExited)
+                    {
+                        process.Kill();
+                    }
                 }
                 catch (Exception ex)
                 {

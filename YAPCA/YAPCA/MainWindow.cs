@@ -1,5 +1,5 @@
 using System.Diagnostics;
-
+using YAPCA.res;
 using Timer = System.Windows.Forms.Timer;
 
 namespace YAPCA
@@ -10,17 +10,25 @@ namespace YAPCA
         private Timer _timer_long;
         //  private NotifyIcon trayIcon;
         private TrayNotificationService _NotificationService;
-
+        private bool _isInitializing = true;
 
         public MainWindow()
         {
             InitializeComponent();
+            LocalizationManager.SetLanguage(ConfigManager.Config.Lang);
+            LocalizationManager.LocalizeUiElements(this);
+
+            // Синхронизируем язык в комбинированном списке
+            LanguageCombo.SelectedItem = ConfigManager.Config.Lang;
+
+            _isInitializing = false; // После инициализации можно обработать изменения
+
             UpdateInfo(this, EventArgs.Empty);
             DateChecker.Check(this, EventArgs.Empty);
             _NotificationService = new TrayNotificationService(trayIcon);
-            trayMenu.Items.Add("Open", null, ShowMainWindow);
-            trayMenu.Items.Add("Exit", null, ExitApp);
-            checkBox1.Checked = ConfigManager.Config.IsKilling;
+            trayMenu.Items.Add(Resources.OpenTrayMenu, null, ShowMainWindow);
+            trayMenu.Items.Add(Resources.ExitTrayMenu, null, ExitApp);
+            AppKillingCheckBox.Checked = ConfigManager.Config.IsKilling;
             this.WindowState = FormWindowState.Minimized;
             this.ShowInTaskbar = false;
             this.Hide();
@@ -45,7 +53,7 @@ namespace YAPCA
             _timer_long.Tick += DateChecker.Check;
             _timer_long.Start();
             WindowTracker.StartTracking(_NotificationService);
-
+           
         }
 
         private void ShowMainWindow(object? sender, EventArgs e)
@@ -59,9 +67,9 @@ namespace YAPCA
             }
 
             //without password
-            this.Show();
-            this.WindowState = FormWindowState.Normal;
-            this.ShowInTaskbar = true;
+            //this.Show();
+            //this.WindowState = FormWindowState.Normal;
+            //this.ShowInTaskbar = true;
             //  trayIcon.Visible=false;
         }
 
@@ -102,12 +110,13 @@ namespace YAPCA
         private void UpdateInfo(object sender, EventArgs e)
         {
             string activeWindow = WindowTracker.GetActiveWindowProcessName();
-            label1.Text = $"Game apps used time:{((ConfigManager.Config.GameTime / 60.0).ToString("F2"))} min";
-            label2.Text = $"Education apps used time:{(ConfigManager.Config.EducationalTime / 60.0).ToString("F2")} min";
-            label3.Text = $"Active Window: {activeWindow}";
-            label4.Text = $"Are games unlocked? :{ConfigManager.Config.AreGamesUnlocked}";
-            label5.Text = $"System Date:{ConfigManager.Config.Date}";
+            label1.Text = string.Format(Resources.MainWindow_UpdateInfo_Game_apps__used_time, ((ConfigManager.Config.GameTime / 60.0).ToString("F2")));
+            label2.Text = string.Format(Resources.MainWindow_UpdateInfo_Education_apps_used_time, (ConfigManager.Config.EducationalTime / 60.0).ToString("F2"));
+            label3.Text = string.Format(Resources.MainWindow_UpdateInfo_Active_Window, activeWindow);
+            label4.Text = string.Format(Resources.MainWindow_UpdateInfo_Are_games_unlocked, ConfigManager.Config.AreGamesUnlocked);
+            label5.Text = string.Format(Resources.MainWindow_UpdateInfo_System_Date, ConfigManager.Config.Date);
         }
+
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -181,7 +190,10 @@ namespace YAPCA
         {
             ConfigManager.Config.GameLimit = ((int)numericUpDown1.Value) * 60;
             ConfigManager.Config.EducationalLimit = ((int)numericUpDown2.Value) * 60;
-            _NotificationService.ShowNotification("Limits", $"Limits changed to {ConfigManager.Config.GameLimit / 60} min (game) and {ConfigManager.Config.EducationalLimit / 60} min (edu)", ToolTipIcon.Warning);
+            _NotificationService.ShowNotification(
+                Resources.LimitsChanged_Title,
+                string.Format(Resources.LimitsChanged_Text, ConfigManager.Config.GameLimit / 60, ConfigManager.Config.EducationalLimit / 60), 
+                ToolTipIcon.Warning);
             ConfigManager.SaveConfig();
         }
 
@@ -190,7 +202,7 @@ namespace YAPCA
             ConfigManager.Config.Password = textBox1.Text;
             _NotificationService.ShowNotification(
                 "",
-                "Password has been changed",
+                Resources.PasswordChanged,
                 ToolTipIcon.Info
                 );
             ConfigManager.SaveConfig();
@@ -198,8 +210,38 @@ namespace YAPCA
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            ConfigManager.Config.IsKilling=checkBox1.Checked;
+            ConfigManager.Config.IsKilling = AppKillingCheckBox.Checked;
             ConfigManager.SaveConfig();
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            if (textBox1.UseSystemPasswordChar)
+            {
+                textBox1.UseSystemPasswordChar = false;
+            }
+            else
+            {
+                textBox1.UseSystemPasswordChar = true;
+            }
+        }
+
+        private void LanguageCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_isInitializing) return; 
+
+            if (LanguageCombo.SelectedItem != null)
+            {
+                string selectedLang = LanguageCombo.SelectedItem.ToString();
+                if (selectedLang != ConfigManager.Config.Lang)
+                {
+                    ConfigManager.Config.Lang = selectedLang;
+                    ConfigManager.SaveConfig();
+                    LocalizationManager.SetLanguage(selectedLang);
+                    LocalizationManager.LocalizeUiElements(this);
+                    Application.Restart(); 
+                }
+            }
         }
     }
 

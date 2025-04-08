@@ -30,48 +30,64 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginWindow));
             textBox1 = new TextBox();
-            button1 = new Button();
-            label1 = new Label();
+            LoginButton = new Button();
+            LabelPasswordLogin = new Label();
+            pictureBox1 = new PictureBox();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
             // textBox1
             // 
-            textBox1.Location = new Point(28, 36);
+            textBox1.Location = new Point(28, 38);
             textBox1.Name = "textBox1";
-            textBox1.Size = new Size(300, 23);
+            textBox1.Size = new Size(266, 23);
             textBox1.TabIndex = 0;
+            textBox1.UseSystemPasswordChar = true;
             textBox1.KeyPress += textBox1_KeyPress;
             // 
-            // button1
+            // LoginButton
             // 
-            button1.Location = new Point(142, 65);
-            button1.Name = "button1";
-            button1.Size = new Size(75, 23);
-            button1.TabIndex = 1;
-            button1.Text = "Login";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
+            LoginButton.Location = new Point(142, 69);
+            LoginButton.Name = "LoginButton";
+            LoginButton.Size = new Size(75, 25);
+            LoginButton.TabIndex = 1;
+            LoginButton.Text = "Login";
+            LoginButton.UseVisualStyleBackColor = true;
+            LoginButton.Click += button1_Click;
             // 
-            // label1
+            // LabelPasswordLogin
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(29, 18);
-            label1.Name = "label1";
-            label1.Size = new Size(87, 15);
-            label1.TabIndex = 2;
-            label1.Text = "Enter password";
+            LabelPasswordLogin.AutoSize = true;
+            LabelPasswordLogin.Location = new Point(29, 19);
+            LabelPasswordLogin.Name = "LabelPasswordLogin";
+            LabelPasswordLogin.Size = new Size(38, 16);
+            LabelPasswordLogin.TabIndex = 2;
+            LabelPasswordLogin.Text = "Enter ";
+            // 
+            // pictureBox1
+            // 
+            pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
+            pictureBox1.Location = new Point(297, 37);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(32, 32);
+            pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
+            pictureBox1.TabIndex = 3;
+            pictureBox1.TabStop = false;
+            pictureBox1.Click += pictureBox1_Click;
             // 
             // LoginWindow
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(7F, 16F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(340, 107);
-            Controls.Add(label1);
-            Controls.Add(button1);
+            ClientSize = new Size(340, 114);
+            Controls.Add(pictureBox1);
+            Controls.Add(LabelPasswordLogin);
+            Controls.Add(LoginButton);
             Controls.Add(textBox1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "LoginWindow";
             Text = "Login";
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -79,7 +95,8 @@
         #endregion
 
         private TextBox textBox1;
-        private Button button1;
-        private Label label1;
+        private Button LoginButton;
+        private Label LabelPasswordLogin;
+        private PictureBox pictureBox1;
     }
 }
